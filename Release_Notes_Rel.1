@@ -1,0 +1,35 @@
+This first release is releasing a few helper-components of diffcity.
+Diffcity (dct) is a commandline tool for system administrators.
+Its main uses will be:
+ - Reporting low-level checks for config changes in your servers.
+   It will report changes over time of password files, firewall rules, security settings, etc.
+   It can take into account individual server configs.
+   You can easily make your own plugins, to have checks for stuff you wish to keep an eye on
+ - Interactive: filtering out info you find unimportant
+   Some log files, and even some everyday command line outputs, just return too much info.
+   For log files, diffcity has a heuristic filter, as well as a deduplicator.
+   For command lines that are too chatty, diffcity can pre-read it, and filter out all stuff you wish to ignore :)
+
+Diffcity has been in development for pretty many years now.
+Formerly, we wished to release a complete package, with everything ready.
+But now, we think we'd better release components which are already usable, building dct along the way.
+
+Today, two helper components are released:
+- problemeye
+- clobber
+
+Problemeye is meant for scanning logfiles.
+Many logfiles are of an overwhelming size.
+Problemeye searches heuristically for problems like errors.
+It can help sysadmins who want to have a quick look if a servers (huge) log file(s) contain(s) any kind of problems.
+
+Clobber is a deduplication tool.
+It, too, can give a quick insight into a (huge) log file.
+Deduplicaton may reveal that 1000s of loglines are really from a handful of different messages, repeated over and over again.
+
+Feedback is very welcome.
+The project is pretty big, I will work on it in some of my free time.
+Working and hoping to get new components added soon.
+
+Best regards,
+Michael         Apr 23, 2020

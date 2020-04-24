@@ -1,0 +1,74 @@
+#!/bin/sh
+
+ME=problemeye
+
+# problemeye: --- seek out lines with problems
+
+# -------------------
+# ---- variables ----
+
+
+# -------------------
+# ---- functions ----
+printusage() {
+cat - << EOT
+   usage: $ME <inputfile>        # form 1
+          cat <inputfile> | $ME  # form 2
+
+   OPTIONS
+       -c    dedup and output a COUNT of occurence with each line. 
+             Chronological order will be lost.
+       -h    this help
+
+EOT
+}
+
+
+problemeye_simple() {
+   cat $INFILE | egrep --color=auto -i -e 'problem|emergency|fault|fail|abort|error|corrupt|panic|oom|warn|unable|permission|exception|deny|denied|deprecat|unavail|forbidden|reject|drop|lost|timeout|timed\ out|too\ |crash|retry|retries'
+}
+
+
+
+# --------------
+# ---- main ----
+if [ $# -gt 2 ] || [ $# -eq 0 ] ; then
+   printusage
+   exit 2
+fi
+
+
+# --- parse cmdline ---
+cflag=0
+while getopts ch name
+do
+   case "$name" in
+       c)
+         cflag=1
+         shift
+         ;;
+       h)
+         printusage
+         exit 0
+         ;;
+      *)
+        # (/bin/sh will print the error)
+        echo "usage: ${ME} -h" 1>&2
+        exit 2
+        ;;
+   esac
+done
+
+
+INFILE=$1
+
+
+# accept both forms:  (1/2) $ME foofile  as well as (2/2) cat foofile | $ME
+[ $# -ge 1 -a -f "$1" ] && input="$1" || input="-"
+
+
+if [ $cflag -eq 0 ] ; then
+   problemeye_simple
+else
+   problemeye_simple | sort | uniq -c | sort -rn
+fi

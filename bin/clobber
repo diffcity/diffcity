@@ -1,0 +1,65 @@
+#!/bin/sh
+
+ME=clobber
+
+# clobber: --- mask mainly numerical details of log-lines. The output allows deduping of now-identical lines.
+#              Grepping a line of the resulting output out of the original file, will reveal all matching raw lines.
+#              A typical use case is finding out all distinct (error-)messages appearing in huge log files.
+
+
+# -------------------
+# ---- functions ----
+printusage() {
+cat - << EOT
+   usage: $ME <inputfile>        # form 1
+          cat <inputfile> | $ME  # form 2
+
+   OPTIONS
+       -c    output a COUNT with each line ( <clobber> | sort | uniq -c | sort -rn )
+       -h    this help
+
+EOT
+}
+
+
+clobber_simple() {
+   cat $INFILE | sed 's;*;\\*;g' | sed 's;\.;\\.;g' | sed 's;";\\";g' | sed 's;/;\\/;g' \
+               | sed "s/[A-FXa-fx0-9\:\-]\{6,30\}/.*/g" | sed 's;\[;\\[;g' | sed 's;\];\\];g' \
+               | tr '0-9' '0' | sed "s|00*|.*|g"  \
+               | sed 's/\(\.\*\)\{2,\}/.*/g'
+}
+
+
+# --------------
+# ---- main ----
+if [ $# -ne 1 ] ; then
+   printusage
+   exit 2
+fi
+
+
+cflag=0
+# --- read options ---
+while getopts h name
+do
+   case "$name" in
+       h)
+         printusage
+         exit 0
+         ;;
+      *)
+        # (/bin/sh will print the error)
+        echo "usage: ${ME} -h" 1>&2
+        exit 2
+        ;;
+   esac
+done
+
+INFILE=$1
+
+
+# accept both forms:  (1/2) $ME foo  as well as (2/2) cat foo | $ME
+[ $# -ge 1 -a -f "$1" ] && input="$1" || input="-"
+
+
+clobber_simple | sort | uniq -c | sort -rn
