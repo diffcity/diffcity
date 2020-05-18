@@ -32,7 +32,7 @@ clobber_simple() {
 
 # --------------
 # ---- main ----
-if [ $# -ne 1 ] ; then
+if [ $# -gt 1 ] ; then
    printusage
    exit 2
 fi
